@@ -13,7 +13,7 @@ app.use(express.static(__dirname + "/public"));
 
 //Authentication page
 app.get("/", (req, res) => {
-  res.render("homepage.ejs", { error: null });
+  res.render("homePage.ejs", { error: null });
 });
 
 //Game Routes
