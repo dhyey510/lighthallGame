@@ -177,14 +177,8 @@ const userPlayGame = async (req, res) => {
       name: req.body.playerName,
       noOfGameWon: 0,
     });
-    newPlayer
-      .save()
-      .then((p) => {
-        newGame.playersName.push(p);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    const playerId = await newPlayer.save();
+    newGame.playersName.push(playerId);
   }
   newGame
     .save()
