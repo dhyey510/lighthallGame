@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <% if(link == null){ %>
+      <form action="/creategame/link" method="post">
+        <label for="word">Word</label>
+        <input type="text" name="word" placeholder="Enter word " />
+        <button type="submit" id="game-button">Create</button>
+      </form>
+      <% }else{ %>
+      <div class="link-section">
+        <input type="text" name="word" value="<%= link%>" id="word" />
+        <div class="btngrp">
+          <button id="copy-button">Copy</button>
+          <a href="/" id="home-button">Home</a>
+        </div>
+      </div>
+      <% }%>
+    </div>
+
+    <script>
+      const btn = document.getElementById("copy-button");
+      btn.addEventListener("click", () => {
+        var copyText = document.getElementById("word");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+      });
+    </script>
+  </body>
+</html>

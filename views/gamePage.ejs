@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="letter-container" class="letter-container hide"></div>
+      <div id="user-input-section"></div>
+      <canvas id="canvas"></canvas>
+      <div id="new-game-container" class="new-game-popup hide">
+        <div id="result-text"></div>
+        <% if (!createdUser){ %>
+        <a id="new-game-button" href="/game">New Game</a>
+        <% } %>
+        <a id="leaderboard-button" href="/game/leaderboard">Leaderboard</a>
+      </div>
+    </div>
+
+    <!-- <script></script> -->
+    <script src="/game.js" game='<%= JSON.stringify(game)%>' playername = '<%= playername%>'></script>
+    </script>
+  </body>
+</html>

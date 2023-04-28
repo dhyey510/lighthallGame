@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+  </head>
+  <body>
+    <!-- celebration -->
+    <div class="confetti">
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+    </div>
+    <div class="container" id="leadcontainer">
+      <h1 id="leadtext">Leaderboard</h1>
+      <table id="leaderboard">
+        <tr>
+          <th>Rank</th>
+          <th>Player Name</th>
+          <th>Game Won</th>
+        </tr>
+        <%for(let i=1; i<=players.length; i++){ %> <% if(players[i-1].name !=
+        null){ %>
+        <tr>
+          <td><%= i %></td>
+          <td><%= players[i-1].name %></td>
+          <td><%= players[i-1].noOfGameWon %></td>
+        </tr>
+        <% } %> <% } %>
+      </table>
+      <a href="/" id="home-button">Home</a>
+    </div>
+  </body>
+</html>

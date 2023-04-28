@@ -44,34 +44,28 @@ const wordList = [
 
 //get homepage
 const homePage = (req, res) => {
-  res.status(200).json({ msg: "Homepage" });
+  res.render("askUsernamePage.ejs", { createdByUser: false });
 };
 
 //play game page
 const createGamePage = async (req, res) => {
+  // console.log(req.query.playerName);
   const randNo = Math.floor(Math.random() * (wordList.length - 1));
   const newGame = new Game({
-    createdBy: "Computer",
     word: wordList[randNo],
   });
 
-  await Player.find({ name: req.params.playername })
-    .then((player) => {
+  await Player.find({ name: req.query.playerName })
+    .then(async (player) => {
       if (player.length != 0) {
         newGame.playersName.push(player[0]);
       } else {
         const newPlayer = new Player({
-          name: req.params.playername,
+          name: req.query.playerName,
           noOfGameWon: 0,
         });
-        newPlayer
-          .save()
-          .then((p) => {
-            newGame.playersName.push(p);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+        const playerId = await newPlayer.save();
+        newGame.playersName.push(playerId);
       }
     })
     .catch((e) => {
@@ -80,7 +74,11 @@ const createGamePage = async (req, res) => {
   newGame
     .save()
     .then((game) => {
-      res.json({ msg: `${game}` });
+      res.render("gamePage.ejs", {
+        game,
+        playername: req.query.playerName,
+        createdUser: false,
+      });
     })
     .catch((e) => {
       console.log(e);
@@ -90,41 +88,45 @@ const createGamePage = async (req, res) => {
 //for result page
 const result = async (req, res) => {
   if (req.params.status === "win") {
-    await Player.find({ name: req.params.playername })
-      .then((player) => {
-        player[0].noOfGameWon += 1;
-        player[0].save();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    const player = await Player.findOne({ name: req.params.playername });
+    player.noOfGameWon += 1;
+
+    const savePlayer = await player.save();
   }
-  await Player.find({})
-    .then((players) => {
-      res.json(players);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  res.json({ msg: "save successfully" });
 };
 
 //leaderboard page
 const leaderboard = async (req, res) => {
   await Player.find({})
     .then((players) => {
-      console.log("hiii");
-      res.json(players);
+      players.sort(getSortedOrder("noOfGameWon"));
+      res.render("leaderboard.ejs", { players });
     })
     .catch((e) => {
       console.log(e);
     });
 };
 
+const getSortedOrder = (prop) => {
+  return function (a, b) {
+    if (a[prop] < b[prop]) {
+      return 1;
+    } else if (a[prop] > b[prop]) {
+      return -1;
+    }
+    return 0;
+  };
+};
+
+const openCreateGamePage = (req, res) => {
+  res.render("createGame.ejs", { link: null });
+};
+
 //create own game
 const createOwnGame = async (req, res) => {
   const newGame = new Game({
     word: req.body.word,
-    createdBy: req.params.name,
     playersName: [],
   });
 
@@ -139,7 +141,7 @@ const createOwnGame = async (req, res) => {
         "/" +
         game.id +
         "/play";
-      res.json(newUrl);
+      res.render("createGame.ejs", { link: newUrl });
     })
     .catch((e) => {
       console.log(e);
@@ -148,28 +150,31 @@ const createOwnGame = async (req, res) => {
 
 //ask for user name and redirect
 const redirectPage = (req, res) => {
-  //ask user name as input
-  res.redirect(
-    `/${req.params.name}/creategame/${req.params.gameId}/${req.body.playername}/play`
-  );
+  res.render("askUsernamePage.ejs", {
+    createdByUser: true,
+    gameId: req.params.gameId,
+  });
 };
 
 //multiple user play game
 const userPlayGame = async (req, res) => {
   const newGame = await Game.findOne({ _id: req.params.gameId });
-  const player = await Player.findOne({ name: req.params.playername });
+  const player = await Player.findOne({ name: req.body.playerName });
 
   if (player != null) {
     for (let i = 0; i < newGame.playersName.length; i++) {
       if (newGame.playersName[i]._id.equals(player._id)) {
-        res.json({ msg: "You already played this game!!" });
-        return;
+        // alert("You already played this game!!");
+        return res.render("homePage.ejs", {
+          error: "You already played this game!!",
+        });
+        // return;
       }
     }
     newGame.playersName.push(player);
   } else {
     const newPlayer = new Player({
-      name: req.params.playername,
+      name: req.body.playerName,
       noOfGameWon: 0,
     });
     newPlayer
@@ -184,7 +189,11 @@ const userPlayGame = async (req, res) => {
   newGame
     .save()
     .then((game) => {
-      res.json(game);
+      res.render("gamePage.ejs", {
+        game,
+        playername: req.body.playerName,
+        createdUser: true,
+      });
     })
     .catch((e) => {
       console.log(e);
@@ -199,4 +208,5 @@ module.exports = {
   redirectPage,
   userPlayGame,
   leaderboard,
+  openCreateGamePage,
 };

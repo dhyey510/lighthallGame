@@ -7,7 +7,6 @@ const gameSchema = new mongoose.Schema({
       ref: "Player",
     },
   ],
-  createdBy: String,
   word: String,
 });
 

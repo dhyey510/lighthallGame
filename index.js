@@ -2,13 +2,18 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
+const path = require("path");
 const gameRoutes = require("./Routes/gameRoutes");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/views"));
+app.use(express.static(__dirname + "/public"));
 
 //Authentication page
 app.get("/", (req, res) => {
-  res.json({ msg: "Authentication Page" });
+  res.render("homepage.ejs", { error: null });
 });
 
 //Game Routes
